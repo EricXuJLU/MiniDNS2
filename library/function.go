@@ -8,14 +8,17 @@ import (
 	"regexp"
 )
 
-func Check(err error, id int){
+//检查一个错误，若发生错误则返回true
+func Check(err error, id string) (fail bool) {
 	if err != nil {
 		fmt.Println(err, id)
+		return true
 	}
+	return false
 }
 func OpenTheDB() (*gorm.DB){
 	db, err := gorm.Open(mysql.Open(model.Database), &gorm.Config{})
-	Check(err, 0002)
+	Check(err, "library.OpenTherDB")
 	return db
 }
 func IsIP(ip string) (m bool) {

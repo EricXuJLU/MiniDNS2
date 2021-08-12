@@ -3,67 +3,55 @@ package service
 import (
 	"MiniDNS2/dao"
 	"MiniDNS2/library"
-	"fmt"
-	"net/http"
+	"MiniDNS2/model"
+	"context"
+	"github.com/go-redis/redis/v8"
+	"strconv"
 )
 
-func HTTPServe(add string){
-	http.HandleFunc("/get", GetIP)
-	http.HandleFunc("/insert", Insert)
-	http.HandleFunc("/update", Update)
-	http.HandleFunc("/delete", Delete)
-	err := http.ListenAndServe(add, nil)
-	library.Check(err, 2001)
+var Srvs = &Service{}
+func InitService(){
+	rdb := redis.NewClient(&redis.Options{
+		Addr:               "localhost:6379",
+		Password:           "",
+		DB:                 1,
+	})
+	_, err := rdb.Ping(context.Background()).Result()
+	library.Check(err, "redis init error in web.init")
+	db := library.OpenTheDB()
+	db.AutoMigrate(&model.DNS{})
+	Srvs.Dao = dao.NewDao(db, rdb)
 }
 
-func GetIP(w http.ResponseWriter, r *http.Request)  {
-	domain :=r.URL.Query().Get("domain")
-	ips := dao.GetIP(domain)
-	if len(ips) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "No sucn domain: %q\n", domain)
-		return
-	}else {
-		fmt.Fprintf(w, "Domain:\n%q\nIP:\n", domain)
-		for _, i := range ips {
-			fmt.Fprintf(w, "%q\n", i)
-		}
-	}
+type Service struct {
+	Dao *dao.Dao
 }
 
-func Insert(w http.ResponseWriter, r *http.Request) {
-	domain := r.URL.Query().Get("domain")
-	ip := r.URL.Query().Get("ip")
-	if domain == "" || !library.IsIP(ip) {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "不合理的请求\n")
-	}else {
-		fmt.Fprintf(w, "%s\n", dao.Insert(domain, ip))
-	}
+func (srvs *Service)GetIP(ctx context.Context, req *model.GetReq) (*model.GetResp) {
+	resp := new(model.GetResp)
+	resp.Domain = req.Domain
+	resp.IPs = srvs.Dao.GetIP(ctx, req.Domain)
+	return resp
 }
 
-func Update(w http.ResponseWriter, r *http.Request) {
-	dmsrc := r.URL.Query().Get("dmsrc")
-	ipsrc := r.URL.Query().Get("ipsrc")
-	dmdst := r.URL.Query().Get("dmdst")
-	ipdst := r.URL.Query().Get("ipdst")
-	if dmsrc=="" || !library.IsIP(ipsrc) || dmdst=="" || !library.IsIP(ipdst) {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "不合理的请求")
-	}else {
-		aff := dao.Update(dmsrc, ipsrc, dmdst, ipdst)
-		fmt.Fprintf(w, "%d个条目已被更新", aff)
-	}
+func (srvs *Service)Insert(ctx context.Context, req *model.InsertReq) (*model.InsertResp) {
+	resp := new(model.InsertResp)
+	resp.Domain = req.Domain
+	resp.IP = req.IP
+	resp.Result = srvs.Dao.Insert(ctx, req.Domain, req.IP)
+	return resp
 }
 
-func Delete(w http.ResponseWriter, r *http.Request) {
-	domain := r.URL.Query().Get("domain")
-	ip := r.URL.Query().Get("ip")
-	if domain == "" || !library.IsIP(ip) {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "不合理的请求")
-	} else {
-		aff := dao.Delete(domain, ip)
-		fmt.Fprintf(w, "%d个条目已被删除", aff)
-	}
+func (srvs *Service)Update(ctx context.Context, req *model.UpdateReq) (*model.UpdateResp) {
+	resp := new(model.UpdateResp)
+	resp.Affected = srvs.Dao.Update(ctx, req.Domainsrc, req.IPsrc, req.Domaindst, req.IPdst)
+	resp.Result = strconv.FormatInt(int64(resp.Affected), 10) + "条记录被更新"
+	return resp
+}
+
+func (srvs *Service)Delete(ctx context.Context, req *model.DeleteReq) (*model.DeleteResp) {
+	resp := new(model.DeleteResp)
+	resp.Affected = srvs.Dao.Delete(ctx, req.Domain, req.IP)
+	resp.Result = strconv.FormatInt(int64(resp.Affected), 10) + "条记录被删除"
+	return resp
 }

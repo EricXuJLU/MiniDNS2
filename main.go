@@ -3,8 +3,10 @@ package main
 import (
 	"MiniDNS2/model"
 	"MiniDNS2/service"
+	"MiniDNS2/web"
 )
 
 func main() {
-	service.HTTPServe(model.Port1)
+	service.InitService()
+	web.HTTPServe(model.Port1)
 }
