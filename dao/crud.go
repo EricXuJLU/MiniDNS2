@@ -6,11 +6,14 @@ import (
 	"context"
 )
 
-///所有操作均不接受*值
+///所有操作均不接受*值和空值
 ///因domain和ip存在一对多的关系，故在redis中采用集合存储，domain是键，ip是值
 
 //同时插入redis和mysql，mysql插入之前先查表，不会重复插入
 func (dao *Dao)Insert(ctx context.Context, domain, ip string) (string) {
+	if domain=="" || !IsIP(ip) {
+		return "不合理的请求"
+	}
 	//redis
 	r := dao.r
 	err := r.SAdd(ctx, domain, ip).Err()
@@ -51,6 +54,9 @@ func (dao *Dao)GetIP(ctx context.Context, domain string) (ips []string) {
 
 //同时更新redis和mysql，mysql中允许重复，redis用的是集合，不会重复
 func (dao *Dao)Update(ctx context.Context, domainsrc, ipsrc, domaindst, ipdst string) (int) {
+	if domainsrc=="" || !IsIP(ipsrc) || domaindst=="" || !IsIP(ipdst) {
+		return 0
+	}
 	//redis
 	r := dao.r
 	err := r.SRem(ctx, domainsrc, ipsrc).Err()
@@ -80,6 +86,9 @@ func (dao *Dao)Update(ctx context.Context, domainsrc, ipsrc, domaindst, ipdst st
 
 //同时删除redis和mysql
 func (dao *Dao)Delete(ctx context.Context, domain, ip string) (int) {
+	if domain=="" || !IsIP(ip) {
+		return 0
+	}
 	//redis
 	r := dao.r
 	err := r.SRem(ctx, domain, ip).Err()

@@ -1,0 +1,67 @@
+syntax = "proto3";
+package proto;
+option go_package = "./proto";
+
+
+
+message GetReq {
+  string Domain=1;
+}
+
+message GetResp {
+  string Domain       = 1;
+  repeated string IPs = 2;
+}
+
+
+
+message InsertReq {
+  string Domain = 1;
+  string IP     = 2;
+}
+
+message InsertResp {
+  string Domain = 1;
+  string IP     = 2;
+  string Result = 3;
+}
+
+
+
+message UpdateReq {
+  string Domainsrc = 1;
+  string IPsrc     = 2;
+  string Domaindst = 3;
+  string IPdst     = 4;
+}
+
+message UpdateResp {
+  int64 Affected = 1;
+  string Result  = 2;
+}
+
+
+
+message DeleteReq {
+  string Domain = 1;
+  string IP     = 2;
+}
+
+message DeleteResp {
+  int64 Affected = 1;
+  string Result  = 2;
+}
+
+
+
+service DNS {
+
+  rpc GetIP(GetReq) returns (GetResp) {}
+
+  rpc Insert(InsertReq) returns (InsertResp) {}
+
+  rpc Update(UpdateReq) returns (UpdateResp) {}
+
+  rpc Delete(DeleteReq) returns (DeleteResp) {}
+
+}

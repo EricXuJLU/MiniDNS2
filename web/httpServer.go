@@ -10,16 +10,16 @@ import (
 )
 
 
-func HTTPServe(add string){
-	http.HandleFunc("/get", GetIP)
-	http.HandleFunc("/insert", Insert)
-	http.HandleFunc("/update", Update)
-	http.HandleFunc("/delete", Delete)
-	err := http.ListenAndServe(add, nil)
+func HTTPServe(addr string){
+	http.HandleFunc("/get", HTTPGetIP)
+	http.HandleFunc("/insert", HTTPInsert)
+	http.HandleFunc("/update", HTTPUpdate)
+	http.HandleFunc("/delete", HTTPDelete)
+	err := http.ListenAndServe(addr, nil)
 	library.Check(err, "HTTP.ListenAndServe error in web.HTTPServe")
 }
 
-func GetIP(w http.ResponseWriter, r *http.Request)  {
+func HTTPGetIP(w http.ResponseWriter, r *http.Request)  {
 	domain :=r.URL.Query().Get("domain")
 	req := &model.GetReq{Domain: domain}
 	resp := service.Srvs.GetIP(context.Background(), req)
@@ -35,7 +35,7 @@ func GetIP(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
-func Insert(w http.ResponseWriter, r *http.Request) {
+func HTTPInsert(w http.ResponseWriter, r *http.Request) {
 	domain := r.URL.Query().Get("domain")
 	ip := r.URL.Query().Get("ip")
 	if domain == "" || !library.IsIP(ip) {
@@ -51,7 +51,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Update(w http.ResponseWriter, r *http.Request) {
+func HTTPUpdate(w http.ResponseWriter, r *http.Request) {
 	dmsrc := r.URL.Query().Get("dmsrc")
 	ipsrc := r.URL.Query().Get("ipsrc")
 	dmdst := r.URL.Query().Get("dmdst")
@@ -71,7 +71,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Delete(w http.ResponseWriter, r *http.Request) {
+func HTTPDelete(w http.ResponseWriter, r *http.Request) {
 	domain := r.URL.Query().Get("domain")
 	ip := r.URL.Query().Get("ip")
 	if domain == "" || !library.IsIP(ip) {
