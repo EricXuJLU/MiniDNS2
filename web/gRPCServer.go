@@ -31,7 +31,7 @@ type gRPCserver struct{}
 func (grpc *gRPCserver) GetIP(ctx context.Context, r *proto.GetReq) (*proto.GetResp, error) {
 	domain := r.Domain
 	req := &model.GetReq{Domain: domain} //service
-	resp := service.Srvs.GetIP(ctx, req) //service
+	resp := service.Srvc.GetIP(ctx, req) //service
 	ret := &proto.GetResp{Domain: resp.Domain, IPs: resp.IPs}
 	return ret, *new(error)
 }
@@ -40,7 +40,7 @@ func (grpc *gRPCserver) Insert(ctx context.Context, r *proto.InsertReq) (*proto.
 	domain := r.Domain
 	ip := r.IP
 	req := &model.InsertReq{Domain: domain, IP: ip} //service
-	resp := service.Srvs.Insert(ctx, req)           //service
+	resp := service.Srvc.Insert(ctx, req)           //service
 	ret := &proto.InsertResp{Domain: resp.Domain, IP: resp.IP, Result: resp.Result}
 	return ret, *new(error)
 }
@@ -51,7 +51,7 @@ func (grpc *gRPCserver) Update(ctx context.Context, r *proto.UpdateReq) (*proto.
 	dmdst := r.Domaindst
 	ipdst := r.IPdst
 	req := &model.UpdateReq{Domainsrc: dmsrc, IPsrc: ipsrc, Domaindst: dmdst, IPdst: ipdst} //service
-	resp := service.Srvs.Update(ctx, req)                                                   //service
+	resp := service.Srvc.Update(ctx, req)                                                   //service
 	ret := &proto.UpdateResp{Affected: int64(resp.Affected), Result: resp.Result}
 	return ret, *new(error)
 }
@@ -60,7 +60,7 @@ func (grpc *gRPCserver) Delete(ctx context.Context, r *proto.DeleteReq) (*proto.
 	domain := r.Domain
 	ip := r.IP
 	req := &model.DeleteReq{Domain: domain, IP: ip}
-	resp := service.Srvs.Delete(ctx, req)
+	resp := service.Srvc.Delete(ctx, req)
 	ret := &proto.DeleteResp{Affected: int64(resp.Affected), Result: resp.Result}
 	return ret, *new(error)
 }

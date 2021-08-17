@@ -25,7 +25,7 @@ func Index_api(c *gin.Context) {
 func GetIP_api(c *gin.Context) {
 	domain := c.Param("domain")
 	req := &model.GetReq{Domain: domain}
-	resp := service.Srvs.GetIP(context.Background(), req)
+	resp := service.Srvc.GetIP(context.Background(), req)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -33,7 +33,7 @@ func Insert_api(c *gin.Context) {
 	domain := c.Request.FormValue("domain")
 	ip := c.Request.FormValue("ip")
 	req := &model.InsertReq{Domain: domain, IP: ip}
-	resp := service.Srvs.Insert(context.Background(), req)
+	resp := service.Srvc.Insert(context.Background(), req)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -48,7 +48,7 @@ func Update_api(c *gin.Context) {
 		Domaindst: dmdst,
 		IPdst:     ipdst,
 	}
-	resp := service.Srvs.Update(context.Background(), req)
+	resp := service.Srvc.Update(context.Background(), req)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -56,6 +56,6 @@ func Delete_api(c *gin.Context) {
 	domain := c.Request.FormValue("domain")
 	ip := c.Request.FormValue("ip")
 	req := &model.DeleteReq{Domain: domain, IP: ip}
-	resp := service.Srvs.Delete(context.Background(), req)
+	resp := service.Srvc.Delete(context.Background(), req)
 	c.JSON(http.StatusOK, resp)
 }

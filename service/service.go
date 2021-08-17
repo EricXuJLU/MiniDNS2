@@ -9,36 +9,37 @@ import (
 	"strconv"
 )
 
-var Srvs = &Service{}
-func InitService(){
+var Srvc = &Service{}
+
+func InitService() {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:               "localhost:6379",
-		Password:           "",
-		DB:                 1,
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       1,
 	})
 	_, err := rdb.Ping(context.Background()).Result()
 	library.Check(err, "redis init error in web.init")
 	db := library.OpenTheDB()
 	db.AutoMigrate(&model.DNS{})
-	Srvs.Dao = dao.NewDao(db, rdb)
+	Srvc.Dao = dao.NewDao(db, rdb)
 }
 
 type Service struct {
 	Dao *dao.Dao
 }
 
-func (srvs *Service)GetIP(ctx context.Context, req *model.GetReq) (*model.GetResp) {
+func (srvs *Service) GetIP(ctx context.Context, req *model.GetReq) *model.GetResp {
 	resp := new(model.GetResp)
 	resp.Domain = req.Domain
 	resp.IPs = srvs.Dao.GetIP(ctx, req.Domain)
 	return resp
 }
 
-func (srvs *Service)Insert(ctx context.Context, req *model.InsertReq) (*model.InsertResp) {
+func (srvs *Service) Insert(ctx context.Context, req *model.InsertReq) *model.InsertResp {
 	resp := new(model.InsertResp)
 	resp.Domain = req.Domain
 	resp.IP = req.IP
-	if req.Domain=="" || !library.IsIP(req.IP) {	//输入值约束
+	if req.Domain == "" || !library.IsIP(req.IP) { //输入值约束
 		resp.Result = "插入失败，不合理的请求"
 		return resp
 	}
@@ -46,9 +47,9 @@ func (srvs *Service)Insert(ctx context.Context, req *model.InsertReq) (*model.In
 	return resp
 }
 
-func (srvs *Service)Update(ctx context.Context, req *model.UpdateReq) (*model.UpdateResp) {
+func (srvs *Service) Update(ctx context.Context, req *model.UpdateReq) *model.UpdateResp {
 	resp := new(model.UpdateResp)
-	if req.Domainsrc=="" || !library.IsIP(req.IPsrc) || req.Domaindst=="" || !library.IsIP(req.IPdst) {
+	if req.Domainsrc == "" || !library.IsIP(req.IPsrc) || req.Domaindst == "" || !library.IsIP(req.IPdst) {
 		resp.Affected = 0
 		resp.Result = "更新失败，不合理的请求"
 		return resp
@@ -58,9 +59,9 @@ func (srvs *Service)Update(ctx context.Context, req *model.UpdateReq) (*model.Up
 	return resp
 }
 
-func (srvs *Service)Delete(ctx context.Context, req *model.DeleteReq) (*model.DeleteResp) {
+func (srvs *Service) Delete(ctx context.Context, req *model.DeleteReq) *model.DeleteResp {
 	resp := new(model.DeleteResp)
-	if req.Domain=="" || !library.IsIP(req.IP) {
+	if req.Domain == "" || !library.IsIP(req.IP) {
 		resp.Affected = 0
 		resp.Result = "删除失败，不合理的请求"
 		return resp

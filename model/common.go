@@ -5,6 +5,7 @@ const (
 	Port1    = ":10086"
 	Port2    = ":10010"
 	Port3    = ":3985"
+	Port4    = ":2021"
 	Local    = "localhost"
 	Address  = "localhost"
 	Redis    = "localhost:6379"

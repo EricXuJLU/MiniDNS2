@@ -21,7 +21,7 @@ func HTTPServe(port string) {
 func HTTPGetIP(w http.ResponseWriter, r *http.Request) {
 	domain := r.URL.Query().Get("domain")
 	req := &model.GetReq{Domain: domain}
-	resp := service.Srvs.GetIP(context.Background(), req)
+	resp := service.Srvc.GetIP(context.Background(), req)
 	if len(resp.IPs) == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "No sucn domain: %q\n", domain)
@@ -45,7 +45,7 @@ func HTTPInsert(w http.ResponseWriter, r *http.Request) {
 			Domain: domain,
 			IP:     ip,
 		}
-		resp := service.Srvs.Insert(context.Background(), req)
+		resp := service.Srvc.Insert(context.Background(), req)
 		fmt.Fprintf(w, "%s\n", resp.Result)
 	}
 }
@@ -65,7 +65,7 @@ func HTTPUpdate(w http.ResponseWriter, r *http.Request) {
 			Domaindst: dmdst,
 			IPdst:     ipdst,
 		}
-		resp := service.Srvs.Update(context.Background(), req)
+		resp := service.Srvc.Update(context.Background(), req)
 		fmt.Fprintf(w, resp.Result)
 	}
 }
@@ -81,7 +81,7 @@ func HTTPDelete(w http.ResponseWriter, r *http.Request) {
 			Domain: domain,
 			IP:     ip,
 		}
-		resp := service.Srvs.Delete(context.Background(), req)
+		resp := service.Srvc.Delete(context.Background(), req)
 		fmt.Fprintf(w, resp.Result)
 	}
 }
