@@ -1,7 +1,7 @@
 syntax = "proto3";
 package proto;
 option go_package = "./proto";
-
+import "google/api/annotations.proto";
 
 
 message GetReq {
@@ -56,12 +56,30 @@ message DeleteResp {
 
 service DNS {
 
-  rpc GetIP(GetReq) returns (GetResp) {}
+  rpc GetIP(GetReq) returns (GetResp) {
+    option (google.api.http) = {
+      get: "/getip"
+    };
+  }
 
-  rpc Insert(InsertReq) returns (InsertResp) {}
+  rpc Insert(InsertReq) returns (InsertResp) {
+    option (google.api.http) = {
+      post: "/insert"
+      body: "*"
+    };
+  }
 
-  rpc Update(UpdateReq) returns (UpdateResp) {}
+  rpc Update(UpdateReq) returns (UpdateResp) {
+    option (google.api.http) = {
+      put: "/update"
+      body: "*"
+    };
+  }
 
-  rpc Delete(DeleteReq) returns (DeleteResp) {}
+  rpc Delete(DeleteReq) returns (DeleteResp) {
+    option (google.api.http) = {
+      delete: "/delete"
+    };
+  }
 
 }

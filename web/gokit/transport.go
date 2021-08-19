@@ -47,8 +47,8 @@ func UpdateEncodeResponse(ctx context.Context, w http.ResponseWriter, response i
 }
 
 func DeleteDecodeRequest(ctx context.Context, request *http.Request) (interface{}, error) {
-	domain := request.FormValue("domain")
-	ip := request.FormValue("ip")
+	domain := request.URL.Query().Get("domain")
+	ip := request.URL.Query().Get("ip")
 	return model.DeleteReq{Domain: domain, IP: ip}, nil
 }
 

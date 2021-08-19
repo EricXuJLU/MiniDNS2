@@ -10,7 +10,7 @@ import (
 )
 
 func HTTPServe(port string) {
-	http.HandleFunc("/get", HTTPGetIP)
+	http.HandleFunc("/getip", HTTPGetIP)
 	http.HandleFunc("/insert", HTTPInsert)
 	http.HandleFunc("/update", HTTPUpdate)
 	http.HandleFunc("/delete", HTTPDelete)
@@ -35,8 +35,8 @@ func HTTPGetIP(w http.ResponseWriter, r *http.Request) {
 }
 
 func HTTPInsert(w http.ResponseWriter, r *http.Request) {
-	domain := r.URL.Query().Get("domain")
-	ip := r.URL.Query().Get("ip")
+	domain := r.FormValue("domain")
+	ip := r.FormValue("ip")
 	if domain == "" || !library.IsIP(ip) {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "不合理的请求\n")
@@ -51,10 +51,10 @@ func HTTPInsert(w http.ResponseWriter, r *http.Request) {
 }
 
 func HTTPUpdate(w http.ResponseWriter, r *http.Request) {
-	dmsrc := r.URL.Query().Get("dmsrc")
-	ipsrc := r.URL.Query().Get("ipsrc")
-	dmdst := r.URL.Query().Get("dmdst")
-	ipdst := r.URL.Query().Get("ipdst")
+	dmsrc := r.FormValue("dmsrc")
+	ipsrc := r.FormValue("ipsrc")
+	dmdst := r.FormValue("dmdst")
+	ipdst := r.FormValue("ipdst")
 	if dmsrc == "" || !library.IsIP(ipsrc) || dmdst == "" || !library.IsIP(ipdst) {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "不合理的请求")

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"MiniDNS2/library"
 	"MiniDNS2/service"
 	"MiniDNS2/web/gokit"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -19,5 +20,6 @@ func GokitServe(port string) {
 	gokitServeMux.Handle("/update", gksvr)
 	gksvr = kithttp.NewServer(gk.DeleteEndpoint, gokit.DeleteDecodeRequest, gokit.DeleteEncodeResponse)
 	gokitServeMux.Handle("/delete", gksvr)
-	http.ListenAndServe(port, gokitServeMux)
+	err := http.ListenAndServe(port, gokitServeMux)
+	library.Check(err, "http.ListenAndServe error in web.GokitServe")
 }

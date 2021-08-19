@@ -20,6 +20,8 @@ func main() {
 	go web.GinServe(model.Port3) //3985
 	//gokit
 	go web.GokitServe(model.Port4) //2021
+	//grpc-gateway-http
+	go web.GatewayServe(model.Port5, model.Local+model.Port2) //2077
 	//主进程睡眠
 	for {
 		time.Sleep(time.Hour)
