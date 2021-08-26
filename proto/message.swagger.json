@@ -1,0 +1,260 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/message.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/delete": {
+      "delete": {
+        "operationId": "DNS_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoDeleteResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Domain",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "IP",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DNS"
+        ]
+      }
+    },
+    "/getip": {
+      "get": {
+        "operationId": "DNS_GetIP",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoGetResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Domain",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DNS"
+        ]
+      }
+    },
+    "/insert": {
+      "post": {
+        "operationId": "DNS_Insert",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoInsertResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoInsertReq"
+            }
+          }
+        ],
+        "tags": [
+          "DNS"
+        ]
+      }
+    },
+    "/update": {
+      "put": {
+        "operationId": "DNS_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protoUpdateResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protoUpdateReq"
+            }
+          }
+        ],
+        "tags": [
+          "DNS"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protoDeleteResp": {
+      "type": "object",
+      "properties": {
+        "Affected": {
+          "type": "string",
+          "format": "int64"
+        },
+        "Result": {
+          "type": "string"
+        }
+      }
+    },
+    "protoGetResp": {
+      "type": "object",
+      "properties": {
+        "Domain": {
+          "type": "string"
+        },
+        "IPs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protoInsertReq": {
+      "type": "object",
+      "properties": {
+        "Domain": {
+          "type": "string"
+        },
+        "IP": {
+          "type": "string"
+        }
+      }
+    },
+    "protoInsertResp": {
+      "type": "object",
+      "properties": {
+        "Domain": {
+          "type": "string"
+        },
+        "IP": {
+          "type": "string"
+        },
+        "Result": {
+          "type": "string"
+        }
+      }
+    },
+    "protoUpdateReq": {
+      "type": "object",
+      "properties": {
+        "Domainsrc": {
+          "type": "string"
+        },
+        "IPsrc": {
+          "type": "string"
+        },
+        "Domaindst": {
+          "type": "string"
+        },
+        "IPdst": {
+          "type": "string"
+        }
+      }
+    },
+    "protoUpdateResp": {
+      "type": "object",
+      "properties": {
+        "Affected": {
+          "type": "string",
+          "format": "int64"
+        },
+        "Result": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
