@@ -1,12 +1,12 @@
 package model
 
 type InsertReq struct {
-	Domain string
-	IP string
+	Domain string `json:"Domain,omitempty"`
+	IP     string `json:"IP,omitempty"`
 }
 
 type InsertResp struct {
-	Domain string
-	IP string
-	Result string
+	Domain string `json:"Domain,omitempty"`
+	IP     string `json:"IP,omitempty"`
+	Result string `json:"Result,omitempty"`
 }

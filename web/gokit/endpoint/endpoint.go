@@ -1,4 +1,4 @@
-package gokit
+package endpoint
 
 import (
 	"MiniDNS2/model"
@@ -16,10 +16,10 @@ type Endpoints struct {
 
 func NewEndpoints(srv *service.Service) *Endpoints {
 	return &Endpoints{
-		GetIPEndpoint:  MakeGetIPEndpoint(srv),
-		InsertEndpoint: MakeInsertEndpoint(srv),
-		UpdateEndpoint: MakeUpdateEndpoint(srv),
-		DeleteEndpoint: MakeDeleteEndpoint(srv),
+		GetIPEndpoint:  service.GoKitLogger(MakeGetIPEndpoint(srv)),
+		InsertEndpoint: service.GoKitLogger(MakeInsertEndpoint(srv)),
+		UpdateEndpoint: service.GoKitLogger(MakeUpdateEndpoint(srv)),
+		DeleteEndpoint: service.GoKitLogger(MakeDeleteEndpoint(srv)),
 	}
 }
 

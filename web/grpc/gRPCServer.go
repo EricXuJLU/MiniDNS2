@@ -1,4 +1,4 @@
-package web
+package grpc
 
 import (
 	"MiniDNS2/library"
@@ -6,29 +6,23 @@ import (
 	"MiniDNS2/proto"
 	"MiniDNS2/service"
 	"context"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 	"net"
 )
 
 func GRPCServe(port string) {
-	//fout, err := os.Create("test.txt")
-	//library.Check(err, "file open failed")
-	//defer fout.Close()
-	//fout.WriteString("grpc start 1")
 	lis, err := net.Listen("tcp", port)
 	library.Check(err, "net.listen err in web.GRPCServe")
-	//fout.WriteString("grpc start 2")
-	s := grpc.NewServer()
-	proto.RegisterDNSServer(s, &gRPCserver{})
-	//fout.WriteString("grpc start 3")
+	s := grpc.NewServer(grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(service.UnaryServerInterceptor)))
+	proto.RegisterDNSServer(s, &GRPCServer{})
 	err = s.Serve(lis)
 	library.Check(err, "grpc.server.serve error in web.GRPCServe")
-	//fout.WriteString("grpc start 4")
 }
 
-type gRPCserver struct{}
+type GRPCServer struct{}
 
-func (grpc *gRPCserver) GetIP(ctx context.Context, r *proto.GetReq) (*proto.GetResp, error) {
+func (grpc *GRPCServer) GetIP(ctx context.Context, r *proto.GetReq) (*proto.GetResp, error) {
 	domain := r.Domain
 	req := &model.GetReq{Domain: domain} //service
 	resp := service.Srvc.GetIP(ctx, req) //service
@@ -36,7 +30,7 @@ func (grpc *gRPCserver) GetIP(ctx context.Context, r *proto.GetReq) (*proto.GetR
 	return ret, *new(error)
 }
 
-func (grpc *gRPCserver) Insert(ctx context.Context, r *proto.InsertReq) (*proto.InsertResp, error) {
+func (grpc *GRPCServer) Insert(ctx context.Context, r *proto.InsertReq) (*proto.InsertResp, error) {
 	domain := r.Domain
 	ip := r.IP
 	req := &model.InsertReq{Domain: domain, IP: ip} //service
@@ -45,7 +39,7 @@ func (grpc *gRPCserver) Insert(ctx context.Context, r *proto.InsertReq) (*proto.
 	return ret, *new(error)
 }
 
-func (grpc *gRPCserver) Update(ctx context.Context, r *proto.UpdateReq) (*proto.UpdateResp, error) {
+func (grpc *GRPCServer) Update(ctx context.Context, r *proto.UpdateReq) (*proto.UpdateResp, error) {
 	dmsrc := r.Domainsrc
 	ipsrc := r.IPsrc
 	dmdst := r.Domaindst
@@ -56,7 +50,7 @@ func (grpc *gRPCserver) Update(ctx context.Context, r *proto.UpdateReq) (*proto.
 	return ret, *new(error)
 }
 
-func (grpc *gRPCserver) Delete(ctx context.Context, r *proto.DeleteReq) (*proto.DeleteResp, error) {
+func (grpc *GRPCServer) Delete(ctx context.Context, r *proto.DeleteReq) (*proto.DeleteResp, error) {
 	domain := r.Domain
 	ip := r.IP
 	req := &model.DeleteReq{Domain: domain, IP: ip}

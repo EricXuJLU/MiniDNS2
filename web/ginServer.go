@@ -1,15 +1,19 @@
 package web
 
 import (
+	"MiniDNS2/library"
 	"MiniDNS2/model"
 	"MiniDNS2/service"
 	"context"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"net/http"
 )
 
 func GinServe(port string) {
-	router := gin.Default()
+	router := gin.New()
+	router.Use(service.GinLogger())
 	router.GET("/", Index_api) //欢迎页
 	router.GET("/getip", GetIP_api)
 	router.POST("/insert", Insert_api)
@@ -30,18 +34,28 @@ func GetIP_api(c *gin.Context) {
 }
 
 func Insert_api(c *gin.Context) {
-	domain := c.Request.FormValue("domain")
-	ip := c.Request.FormValue("ip")
+	data, err := ioutil.ReadAll(c.Request.Body)
+	library.Check(err, "ioutil.ReadAll error in web.ginServer.Insert_api")
+	var value = make(map[string]interface{})
+	err = json.Unmarshal(data, &value)
+	library.Check(err, "json.Unmarshal error in web.ginServer.Insert_api")
+	domain := value["domain"].(string)
+	ip := value["ip"].(string)
 	req := &model.InsertReq{Domain: domain, IP: ip}
 	resp := service.Srvc.Insert(context.Background(), req)
 	c.JSON(http.StatusOK, resp)
 }
 
 func Update_api(c *gin.Context) {
-	dmsrc := c.Request.FormValue("dmsrc")
-	ipsrc := c.Request.FormValue("ipsrc")
-	dmdst := c.Request.FormValue("dmdst")
-	ipdst := c.Request.FormValue("ipdst")
+	data, err := ioutil.ReadAll(c.Request.Body)
+	library.Check(err, "ioutil.ReadAll error in web.ginServer.Update_api")
+	var value = make(map[string]interface{})
+	err = json.Unmarshal(data, &value)
+	library.Check(err, "json.Unmarshal error in web.ginServer.Update_api")
+	dmsrc := value["dmsrc"].(string)
+	ipsrc := value["ipsrc"].(string)
+	dmdst := value["dmdst"].(string)
+	ipdst := value["ipdst"].(string)
 	req := &model.UpdateReq{
 		Domainsrc: dmsrc,
 		IPsrc:     ipsrc,
