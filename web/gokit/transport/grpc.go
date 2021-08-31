@@ -11,33 +11,6 @@ import (
 )
 
 //封装在Gokit里的grpc，不直接与Service层交互
-/*
-type Handler interface {
-	ServeGPRC(ctx context.Context, req interface{}) (context.Context, interface{}, error)
-}
-
-type Server struct {
-	e	kitendpoint.Endpoint
-	dec grpc.DecodeRequestFunc
-	enc grpc.EncodeResponseFunc
-}
-
-func NewServer(
-	e kitendpoint.Endpoint,
-	dec grpc.DecodeRequestFunc,
-	enc grpc.EncodeResponseFunc,
-	options ...grpc.ServerOption,
-	) *Server {
-	s := &Server{
-		e:   e,
-		dec: dec,
-		enc: enc,
-	}
-	for _, option := range options {
-		option(s)
-	}
-}
-*/
 
 type KitGRPCServer struct {
 	getIP  grpc.Handler
